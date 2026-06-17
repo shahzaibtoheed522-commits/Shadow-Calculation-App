@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Shadow Calculation</string>
+    <string name="made_by">Made by Shahzaib</string>
+    <string name="copy_success">Copied to clipboard</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="memory_cleared">Memory cleared</string>
+    <string name="privacy_title">Privacy Policy</string>
+    <string name="terms_title">Terms of Use</string>
+    <string name="privacy_content">Shadow Calculation takes security and privacy seriously. This premium calculation environment operates entirely offline within your local Android device sandbox. We do not transmit, collect, or share any of your inputs, formulas, or history data. All computations occur on-device with mathematical sandboxing, ensuring complete cryptographic isolation.</string>
+    <string name="terms_content">By utilizing the Shadow Calculation workspace, you acknowledge local double-precision execution bounds. This platform is engineered for professionals, engineers, and scientists. Calculations are provided offline with no network dependencies. The developer, Shahzaib, maintains zero tracking, meaning your metrics are fully secure and stay under your absolute control.</string>
+    <string name="close">Dismiss Panel</string>
+</resources>

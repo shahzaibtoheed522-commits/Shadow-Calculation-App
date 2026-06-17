@@ -1,0 +1,6 @@
+{
+  "name": "Shadow Calculation",
+  "description": "Highly secure, premium, luxury scientific calculator with gold/silver accents, glassmorphism UI, smooth animations, and hidden privacy section.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
