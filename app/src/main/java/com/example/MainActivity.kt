@@ -51,8 +51,8 @@ class MainActivity : ComponentActivity() {
             var showSplash by remember { mutableStateOf(true) }
 
             LaunchedEffect(Unit) {
-                // Keep the premium splash visible for 2200ms
-                delay(2200)
+                // Keep the premium splash visible for 3200ms
+                delay(3200)
                 showSplash = false
             }
 
@@ -88,25 +88,95 @@ class MainActivity : ComponentActivity() {
 // ================= PRIVATE COMPOSABLES: SPLASH SCREEN =================
 
 @Composable
+fun AnimatedShadowLetters(isDark: Boolean) {
+    val uppercaseWord = "SHADOW"
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        uppercaseWord.forEachIndexed { index, char ->
+            var activeState by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                delay(index * 130L)
+                activeState = true
+            }
+
+            val scale by animateFloatAsState(
+                targetValue = if (activeState) 1f else 0.1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                label = "scale"
+            )
+
+            val rotation by animateFloatAsState(
+                targetValue = if (activeState) 0f else -45f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                ),
+                label = "rotation"
+            )
+
+            val alpha by animateFloatAsState(
+                targetValue = if (activeState) 1f else 0f,
+                animationSpec = tween(durationMillis = 500, easing = EaseInOutQuad),
+                label = "alpha"
+            )
+
+            // Deluxe gold gradient brush for letters
+            val goldBrush = Brush.linearGradient(
+                colors = listOf(
+                    Color(0xFFFFDF7D),
+                    Color(0xFFD4AF37),
+                    Color(0xFFAA7C11),
+                    Color(0xFFD4AF37),
+                    Color(0xFFFFDF7D)
+                )
+            )
+
+            Text(
+                text = char.toString(),
+                style = TextStyle(
+                    brush = goldBrush,
+                    fontSize = 52.sp,
+                    fontWeight = FontWeight.Black,
+                    fontFamily = FontFamily.Serif,
+                    letterSpacing = 1.sp
+                ),
+                modifier = Modifier
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        rotationZ = rotation,
+                        alpha = alpha
+                    )
+            )
+        }
+    }
+}
+
+@Composable
 fun ShadowSplashScreen(isDark: Boolean) {
     val infiniteTransition = rememberInfiniteTransition(label = "SplashPulse")
     
     // Smooth gold shimmer animation
     val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
-        targetValue = 1.05f,
+        initialValue = 0.96f,
+        targetValue = 1.04f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = EaseInOutQuad),
+            animation = tween(1200, easing = EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
         label = "PulseScale"
     )
 
     val fadeAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.5f,
+        initialValue = 0.6f,
         targetValue = 1.0f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = EaseInOutQuad),
+            animation = tween(1200, easing = EaseInOutQuad),
             repeatMode = RepeatMode.Reverse
         ),
         label = "FadeAlpha"
@@ -125,7 +195,7 @@ fun ShadowSplashScreen(isDark: Boolean) {
 
     // Dark luxury theme colors (Void Black for Frosted glass contrast)
     val bgGradient = if (isDark) {
-        Brush.verticalGradient(listOf(Color(0xFF0B0C0E), Color(0xFF030303)))
+        Brush.verticalGradient(listOf(Color(0xFF040405), Color(0xFF0A0B0D)))
     } else {
         Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFE2E6EC)))
     }
@@ -138,53 +208,110 @@ fun ShadowSplashScreen(isDark: Boolean) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(24.dp)
         ) {
-            // SC Luxury circular monogram emblem
+            // SC Luxury circular monogram emblem pulsating elegantly
             Box(
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(130.dp)
                     .scale(pulseScale)
                     .border(BorderStroke(2.dp, goldBrush), CircleShape)
                     .background(if (isDark) Color(0x0CFFFFFF) else Color(0x33BCD4E6), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "SC",
+                    text = "SR",
                     style = TextStyle(
                         brush = goldBrush,
-                        fontSize = 46.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 42.sp,
+                        fontWeight = FontWeight.Black,
                         fontFamily = FontFamily.Serif,
-                        letterSpacing = 4.sp
+                        letterSpacing = 2.sp
                     ),
-                    modifier = Modifier.offset(x = 2.dp)
+                    modifier = Modifier.offset(x = 1.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
-            Text(
-                text = stringResource(id = R.string.app_name),
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
-                letterSpacing = 3.sp,
-                color = if (isDark) Color(0xFFEBEBEB) else Color(0xFF1E2022),
-                textAlign = TextAlign.Center
-            )
+            // Brand new high fidelity staggered letters animation for word "SHADOW"
+            AnimatedShadowLetters(isDark = isDark)
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = stringResource(id = R.string.made_by),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                fontFamily = FontFamily.Monospace,
-                letterSpacing = 5.sp,
-                color = (if (isDark) Color(0xFFD4AF37) else Color(0xFF8A6C11)).copy(alpha = fadeAlpha),
-                textAlign = TextAlign.Center
-            )
+            // Subtitle that fades in elements nicely
+            var showSubtitle by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                delay(950) // appear right after letters start animating
+                showSubtitle = true
+            }
+
+            AnimatedVisibility(
+                visible = showSubtitle,
+                enter = fadeIn(animationSpec = tween(800)) + expandVertically(),
+                exit = fadeOut()
+            ) {
+                Text(
+                    text = "CALCULATION ENGINE",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = FontFamily.Serif,
+                    letterSpacing = 6.sp,
+                    color = if (isDark) Color(0xFFD4AF37).copy(alpha = 0.8f) else Color(0xFF8A6D1C),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(64.dp))
+
+            // Premium pulsing developer identification check
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.graphicsLayer { alpha = fadeAlpha }
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .background(Color(0x1AD4AF37), CircleShape)
+                            .border(BorderStroke(1.dp, Color(0xFFD4AF37)), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "✓",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFFD4AF37)
+                        )
+                    }
+
+                    Text(
+                        text = stringResource(id = R.string.made_by),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontFamily = FontFamily.Serif,
+                        letterSpacing = 2.sp,
+                        color = if (isDark) Color.White.copy(alpha = 0.9f) else Color(0xFF1E2022),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "STABLE SECURED ENVIRONMENT",
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace,
+                    letterSpacing = 3.sp,
+                    color = if (isDark) Color.White.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.4f),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -206,6 +333,15 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
+
+    var showIphoneNotification by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(600) // Brief suspension after entering screen
+        showIphoneNotification = true
+        delay(6000) // Stay visible for 6 seconds
+        showIphoneNotification = false
+    }
 
     // Premium Theme Brushes
     val goldBrush = Brush.linearGradient(
@@ -293,11 +429,11 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
                             letterSpacing = 1.sp
                         )
                         Text(
-                            text = "BY SHAHZAIB",
+                            text = "BY SHAHZAIB RAO",
                             fontSize = 8.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = if (isDark) Color.White.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.4f),
-                            letterSpacing = 1.sp
+                            fontWeight = FontWeight.ExtraBold,
+                            color = if (isDark) Color.White.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.5f),
+                            letterSpacing = 2.sp
                         )
                     }
                 }
@@ -468,8 +604,8 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
                             Text(
                                 text = expr.ifEmpty { "0" },
                                 fontSize = if (expr.length > 12) 28.sp else 38.sp,
-                                fontWeight = FontWeight.Light,
-                                color = if (isDark) Color.White.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.4f),
+                                fontWeight = FontWeight.Bold,
+                                color = if (isDark) Color.White.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.5f),
                                 textAlign = TextAlign.End,
                                 maxLines = 1,
                                 overflow = TextOverflow.Clip
@@ -486,9 +622,9 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
                                     Text(
                                         text = previewRes,
                                         fontSize = 18.sp,
-                                        color = if (isDark) Color(0xFFD4AF37).copy(alpha = 0.6f) else Color(0xFF8A6D1C).copy(alpha = 0.6f),
+                                        color = if (isDark) Color(0xFFD4AF37).copy(alpha = 0.75f) else Color(0xFF8A6D1C).copy(alpha = 0.75f),
                                         textAlign = TextAlign.End,
-                                        fontWeight = FontWeight.Light
+                                        fontWeight = FontWeight.Bold
                                     )
                                     Box(
                                         modifier = Modifier
@@ -507,7 +643,7 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
                                             if (isDark) goldBrush else Brush.linearGradient(listOf(Color(0xFF8A6D1C), Color(0xFF5C4712)))
                                         },
                                         fontSize = if (res.length > 10) 36.sp else 48.sp,
-                                        fontWeight = FontWeight.Light,
+                                        fontWeight = FontWeight.Black,
                                         textAlign = TextAlign.End
                                     ),
                                     maxLines = 1
@@ -816,6 +952,124 @@ fun ShadowCalculatorScreen(viewModel: ShadowViewModel, isDark: Boolean) {
             }
         }
 
+        // iOS pop-up notification banner
+        AnimatedVisibility(
+            visible = showIphoneNotification,
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioLowBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            ) + fadeIn(),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(600, easing = FastOutLinearInEasing)
+            ) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp, start = 12.dp, end = 12.dp)
+                .widthIn(max = 440.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showIphoneNotification = false },
+                shape = RoundedCornerShape(22.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isDark) Color(0xF21C1C1E) else Color(0xF2F2F2F7)
+                ),
+                border = BorderStroke(1.dp, if (isDark) Color.White.copy(alpha = 0.12f) else Color.Black.copy(alpha = 0.08f)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFFD4AF37), Color(0xFF8A6D1C))
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "SR",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                color = Color.Black,
+                                fontFamily = FontFamily.Serif
+                            )
+                        }
+
+                        Column {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = "SYSTEM ACCESS",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace,
+                                    color = if (isDark) Color(0xFFD4AF37) else Color(0xFF8A6D1C),
+                                    letterSpacing = 1.sp
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(4.dp)
+                                        .background(if (isDark) Color.White.copy(0.4f) else Color.Black.copy(0.4f), CircleShape)
+                                )
+                                Text(
+                                    text = "now",
+                                    fontSize = 10.sp,
+                                    color = if (isDark) Color.White.copy(0.5f) else Color.Black.copy(0.5f),
+                                    fontFamily = FontFamily.Default
+                                )
+                            }
+                            
+                            Text(
+                                text = "Made by Shahzaib Rao",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = if (isDark) Color.White else Color(0xFF1C1C1E),
+                                fontFamily = FontFamily.Default
+                            )
+                        }
+                    }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(Color(0xFF34C759), CircleShape)
+                        )
+                        Text(
+                            text = "Active",
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isDark) Color.White.copy(0.6f) else Color.Black.copy(0.6f)
+                        )
+                    }
+                }
+            }
+        }
+
         // 2. HIDDEN PRIVACY & CERTIFICATION DRAWER (Activated 5x logo tap)
         if (isSecretVisible) {
             Dialog(onDismissRequest = { viewModel.closeSecretSection() }) {
@@ -1032,11 +1286,16 @@ fun LuxuryButton(
             ),
         contentAlignment = Alignment.Center
     ) {
+        val fontStyleFamily = when (colorGroup) {
+            "F" -> FontFamily.Serif
+            "N" -> FontFamily.SansSerif
+            else -> FontFamily.Default
+        }
         Text(
             text = txt,
-            fontSize = if (txt.length > 2) 13.sp else 19.sp,
-            fontWeight = if (colorGroup == "N") FontWeight.Light else FontWeight.Bold,
-            fontFamily = if (colorGroup == "F") FontFamily.Serif else FontFamily.Default,
+            fontSize = if (txt.length > 2) 14.sp else 21.sp,
+            fontWeight = if (colorGroup == "N") FontWeight.Bold else FontWeight.ExtraBold,
+            fontFamily = fontStyleFamily,
             fontStyle = if (colorGroup == "F") FontStyle.Italic else FontStyle.Normal,
             color = contentColor,
             textAlign = TextAlign.Center
